@@ -1,20 +1,3 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in D:\Android\sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
-
-# Add any project specific keep options here:
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
 #指定代码的压缩级别
 -optimizationpasses 5
 #包明不混合大小写
@@ -41,16 +24,43 @@
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class com.android.vending.licensing.ILicensingService
-#如果有引用v4包可以添加下面这行
--keep public class * extends android.support.v4.app.Fragment
-#忽略警告
--ignorewarning
 
--keep class com.youth.banner.** {
-    *;
- }
+#glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
--keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
 }
+
+#butterknife
+-keep public class * implements butterknife.Unbinder { public <init>(**, android.view.View); }
+-keep class butterknife.*
+-keepclasseswithmembernames class * { @butterknife.* <methods>; }
+-keepclasseswithmembernames class * { @butterknife.* <fields>; }
+-keepclassmembers class * { @butterknife.* <methods>; }
+-keepclassmembers class * { @butterknife.* <fields>; }
+
+#gsyvideoplayer
+-keep class com.shuyu.gsyvideoplayer.video.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.video.**
+-keep class com.shuyu.gsyvideoplayer.video.base.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.video.base.**
+-keep class com.shuyu.gsyvideoplayer.utils.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.utils.**
+-keep class tv.danmaku.ijk.** { *; }
+-dontwarn tv.danmaku.ijk.**
+-keep public class * extends android.view.View{
+    *** get*();
+    void set*(***);
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+-dontwarn com.google.android.exoplayer.**
+-keep class com.google.android.exoplayer.**{*;}
+
+
+
+

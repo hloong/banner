@@ -1,46 +1,56 @@
-/*
- * Copyright 2014 Toxic Bakery
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.youth.banner.transformer;
 
 import android.view.View;
 
-public class DepthPageTransformer extends ABaseTransformer {
+import androidx.viewpager2.widget.ViewPager2;
 
-	private static final float MIN_SCALE = 0.75f;
+public class DepthPageTransformer extends BasePageTransformer {
+    private static final float DEFAULT_MIN_SCALE = 0.75f;
+    private float mMinScale = DEFAULT_MIN_SCALE;
 
-	@Override
-	protected void onTransform(View view, float position) {
-		if (position <= 0f) {
-			view.setTranslationX(0f);
-			view.setScaleX(1f);
-			view.setScaleY(1f);
-		} else if (position <= 1f) {
-			final float scaleFactor = MIN_SCALE + (1 - MIN_SCALE) * (1 - Math.abs(position));
-			view.setAlpha(1 - position);
-			view.setPivotY(0.5f * view.getHeight());
-			view.setTranslationX(view.getWidth() * -position);
-			view.setScaleX(scaleFactor);
-			view.setScaleY(scaleFactor);
-		}
-	}
+    public DepthPageTransformer() {
+    }
 
-	@Override
-	protected boolean isPagingEnabled() {
-		return true;
-	}
+    public DepthPageTransformer(float minScale) {
+        this.mMinScale = minScale;
+    }
 
+    public void transformPage(View view, float position) {
+        int pageWidth = view.getWidth();
+
+        if (position < -1) { // [-Infinity,-1)
+            // This page is way off-screen to the left.
+            view.setAlpha(0f);
+
+        } else if (position <= 0) { // [-1,0]
+            // Use the default slide transition when moving to the left page
+            view.setAlpha(1f);
+            view.setTranslationX(0f);
+            view.setScaleX(1f);
+            view.setScaleY(1f);
+
+        } else if (position <= 1) { // (0,1]
+            //进入页面时
+            view.setVisibility(View.VISIBLE);
+            // Fade the page out.
+            view.setAlpha(1 - position);
+
+            // Counteract the default slide transition
+            view.setTranslationX(pageWidth * -position);
+
+            // Scale the page down (between MIN_SCALE and 1)
+            float scaleFactor = mMinScale
+                    + (1 - mMinScale) * (1 - Math.abs(position));
+            view.setScaleX(scaleFactor);
+            view.setScaleY(scaleFactor);
+            //退出页面时
+            if(position ==1){
+                view.setVisibility(View.INVISIBLE);
+            }
+
+        } else { // (1,+Infinity]
+            // This page is way off-screen to the right.
+            view.setAlpha(0f);
+        }
+    }
 }
